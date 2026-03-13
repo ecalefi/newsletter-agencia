@@ -405,18 +405,20 @@ function ImageField({
 
   return (
     <label className="text-sm font-semibold text-[var(--color-ink)]">
-      {label} URL
-      <input
-        className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
+      {label}
       <input
         className="mt-2 block text-xs"
         type="file"
         accept="image/*"
         onChange={(event) => void handleFile(event.target.files?.[0] ?? null)}
       />
+      {value ? (
+        <div className="mt-2 rounded-lg border border-[var(--color-border)] bg-white p-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={value} alt={label} className="h-28 w-full rounded object-cover" />
+          <p className="mt-2 break-all text-xs font-normal text-[var(--color-muted)]">{value}</p>
+        </div>
+      ) : null}
       {uploading ? <span className="mt-1 block text-xs text-[var(--color-primary)]">Enviando imagem...</span> : null}
     </label>
   );
