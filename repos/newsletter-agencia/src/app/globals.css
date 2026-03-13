@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #f4f8fb;
+  --color-bg-soft: #e8f2f8;
+  --color-surface: #ffffff;
+  --color-border: #d4e2ec;
+  --color-primary: #0b7285;
+  --color-accent: #ff6b35;
+  --color-ink: #11324a;
+  --color-muted: #49657a;
+}
+
+@theme inline {
+  --font-title: var(--font-title);
+  --font-body: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(circle at top right, #d7eef7 0%, var(--color-bg) 35%, #edf4f9 100%);
+  color: var(--color-ink);
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+}
+
+.font-title {
+  font-family: var(--font-title), Georgia, serif;
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: 0 8px 24px rgba(10, 60, 96, 0.06);
+}
+
+.btn {
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}
