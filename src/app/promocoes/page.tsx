@@ -56,6 +56,7 @@ export default function PromocoesPage() {
   const [newsletter, setNewsletter] = useState<NewsletterContent>(defaultState);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [bulkUploading, setBulkUploading] = useState(false);
 
   useEffect(() => {
     const run = async () => {
@@ -132,6 +133,78 @@ export default function PromocoesPage() {
     });
   };
 
+  const applyBulkImageUrls = (urls: string[]) => {
+    if (!urls.length) {
+      return;
+    }
+
+    const safeUrl = (index: number, fallback: string): string => urls[index] ?? fallback;
+
+    setNewsletter((prev) => {
+      let cursor = 0;
+
+      const nextDestinations = prev.destinations.map((card) => {
+        const next = { ...card, imageUrl: safeUrl(cursor, card.imageUrl) };
+        cursor += 1;
+        return next;
+      });
+
+      const nextHotels = prev.hotels.map((card) => {
+        const next = { ...card, imageUrl: safeUrl(cursor, card.imageUrl) };
+        cursor += 1;
+        return next;
+      });
+
+      const nextPackages = prev.packages.map((card) => {
+        const next = { ...card, imageUrl: safeUrl(cursor, card.imageUrl) };
+        cursor += 1;
+        return next;
+      });
+
+      const nextReviews = prev.reviews.map((review) => {
+        const next = { ...review, avatarUrl: safeUrl(cursor, review.avatarUrl) };
+        cursor += 1;
+        return next;
+      });
+
+      return {
+        ...prev,
+        logoUrl: safeUrl(cursor++, prev.logoUrl),
+        hero: { ...prev.hero, imageUrl: safeUrl(cursor++, prev.hero.imageUrl) },
+        banner1: { ...prev.banner1, imageUrl: safeUrl(cursor++, prev.banner1.imageUrl) },
+        banner2: { ...prev.banner2, imageUrl: safeUrl(cursor++, prev.banner2.imageUrl) },
+        destinations: nextDestinations,
+        hotels: nextHotels,
+        packages: nextPackages,
+        reviews: nextReviews,
+      };
+    });
+  };
+
+  const onBulkUpload = async (files: FileList | null) => {
+    if (!files?.length) {
+      return;
+    }
+
+    setBulkUploading(true);
+    setMessage("");
+
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        const url = await uploadImage(file);
+        urls.push(url);
+      }
+
+      applyBulkImageUrls(urls);
+      setMessage(`Upload concluido. ${urls.length} imagem(ns) aplicada(s).`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Falha no upload em lote");
+    } finally {
+      setBulkUploading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="card p-6">
@@ -142,6 +215,22 @@ export default function PromocoesPage() {
       </section>
 
       <form className="space-y-6" onSubmit={save}>
+        <section className="card p-6">
+          <h3 className="font-title text-xl">Troca rapida de imagens</h3>
+          <p className="mt-2 text-sm text-[var(--color-muted)]">
+            Envie varias imagens de uma vez para atualizar todos os blocos visuais (cards, avatares, logo, hero e banners).
+          </p>
+          <input
+            className="mt-3 block text-sm"
+            type="file"
+            accept="image/*"
+            multiple
+            disabled={bulkUploading}
+            onChange={(event) => void onBulkUpload(event.target.files)}
+          />
+          {bulkUploading ? <p className="mt-2 text-sm font-semibold text-[var(--color-primary)]">Enviando lote de imagens...</p> : null}
+        </section>
+
         <section className="card grid gap-4 p-6 md:grid-cols-2">
           <LabeledInput
             label="Nome da agencia"

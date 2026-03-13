@@ -160,7 +160,11 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                     <td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:#ffffff;">
-                      ${escapeHtml(content.agencyName)}
+                      ${
+                        content.logoUrl.trim()
+                          ? `<img src="${safeImage(content.logoUrl)}" alt="${escapeHtml(content.agencyName)}" height="28" style="display:block;height:28px;max-width:160px;object-fit:contain;" />`
+                          : escapeHtml(content.agencyName)
+                      }
                     </td>
                     <td align="right" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#d9efff;">
                       in · ig · fb · yt
@@ -235,6 +239,12 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
                     <td width="33.33%" style="padding:14px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#ffffff;">🛒 ${escapeHtml(content.banner2.ctaLabel)}</td>
                   </tr>
                 </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:0 10px 12px;">
+                <img src="${safeImage(content.banner2.imageUrl)}" alt="${escapeHtml(content.banner2.title)}" width="100%" style="display:block;height:180px;object-fit:cover;" />
               </td>
             </tr>
 
