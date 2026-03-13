@@ -1,0 +1,8 @@
+# Workspace-level git scope: track only newsletter project
+*
+!.gitignore
+
+!repos/
+repos/*
+!repos/newsletter-agencia/
+!repos/newsletter-agencia/**
