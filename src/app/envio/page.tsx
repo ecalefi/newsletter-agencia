@@ -39,15 +39,20 @@ export default function EnvioPage() {
         }),
       });
 
-      const payload = (await response.json()) as CampaignLog & { error?: string };
+      const payload = (await response.json().catch(() => ({}))) as Partial<CampaignLog> & {
+        error?: string;
+      };
 
       if (!response.ok) {
         setMessage(payload.error ?? "Falha ao enviar");
       } else {
-        setMessage(`Envio realizado com sucesso. ID: ${payload.id}`);
+        setMessage(`Envio realizado com sucesso. ID: ${payload.id ?? "n/a"}`);
       }
 
       await fetchLogs();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Falha inesperada ao enviar";
+      setMessage(message);
     } finally {
       setLoading(false);
     }
