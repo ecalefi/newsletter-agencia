@@ -11,6 +11,13 @@ const escapeHtml = (value: string): string =>
 const fallbackImage =
   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80";
 
+const insuranceBannerImage =
+  process.env.NEWSLETTER_INSURANCE_BANNER_IMAGE_URL?.trim() ||
+  "https://images.unsplash.com/photo-1529078155058-5d716f45d604?auto=format&fit=crop&w=1400&q=80";
+const insuranceBannerCtaUrl =
+  process.env.NEWSLETTER_INSURANCE_BANNER_CTA_URL?.trim() ||
+  "https://wa.me/556132021245?text=Quero%20cotar%20seguro%20de%20viagem%20internacional";
+
 const getFixedLogoUrl = (): string => {
   const explicit = process.env.NEWSLETTER_LOGO_URL?.trim();
   if (explicit) {
@@ -106,6 +113,30 @@ const renderSection = (title: string, cards: PackageImage[]): string => `
   </tr>
 `;
 
+const renderInsuranceBanner = (): string => `
+  <tr>
+    <td style="padding:6px 16px 18px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:14px;overflow:hidden;border:1px solid #f2d7a5;background:#fff8ed;">
+        <tr>
+          <td style="padding:10px 10px 0;">
+            <img src="${safeImage(insuranceBannerImage)}" alt="Seguro de viagem internacional" width="100%" style="display:block;height:180px;object-fit:cover;border-radius:10px;" />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 16px 16px;font-family:Arial,Helvetica,sans-serif;">
+            <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#b96d00;font-weight:700;">Protecao internacional</div>
+            <div style="margin-top:6px;font-size:24px;line-height:1.2;color:#7a4a00;font-weight:700;">Seguro de viagem internacional</div>
+            <div style="margin-top:8px;font-size:15px;line-height:1.6;color:#5e4a2d;">Assistencia medica, cobertura para bagagem, suporte 24h e tranquilidade do embarque ao retorno.</div>
+            <div style="margin-top:12px;">
+              <a href="${escapeHtml(insuranceBannerCtaUrl)}" style="display:inline-block;padding:10px 14px;border-radius:8px;background:#c77700;color:#ffffff;text-decoration:none;font-size:13px;font-weight:700;">Solicitar cotacao de seguro</a>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+`;
+
 export const renderNewsletterHtml = (content: NewsletterContent): string => `<!doctype html>
 <html lang="pt-BR">
   <head>
@@ -136,6 +167,7 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
 
             ${renderSection("3 Pacotes Nacionais", content.nationalPackages)}
             ${renderSection("3 Pacotes Internacionais", content.internationalPackages)}
+            ${renderInsuranceBanner()}
 
             <tr>
               <td style="padding:18px 20px;background:#082d44;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#c8dfef;line-height:1.75;text-align:center;">
@@ -170,6 +202,10 @@ export const renderNewsletterText = (content: NewsletterContent): string => {
   lines.push("");
   lines.push("3 Pacotes Internacionais:");
   content.internationalPackages.forEach((card, index) => lines.push(`${index + 1}. ${card.caption} - ${card.imageUrl}`));
+  lines.push("");
+  lines.push("Seguro de viagem internacional:");
+  lines.push("Assistencia medica, cobertura para bagagem e suporte 24h.");
+  lines.push(`Solicite sua cotacao: ${insuranceBannerCtaUrl}`);
   lines.push("");
   lines.push("Casa Mundo de Viagens e Negocios em Turismo Ltda");
   lines.push("CNPJ: 04.078.769/0001-83");
