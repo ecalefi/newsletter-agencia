@@ -7,6 +7,7 @@ const defaultNewsletter = (): NewsletterContent => ({
   templateVersion: "v2",
   agencyName: "Horizonte Viagens",
   preheader: "Pacotes nacionais e internacionais da semana.",
+  logoUrl: "/logo-horizonte-viagens.svg",
   highlightBanner: {
     imageUrl:
       "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80",
@@ -87,6 +88,7 @@ const normalizeNewsletter = (value: unknown): NewsletterContent => {
     templateVersion: "v2",
     agencyName: asString(raw.agencyName, defaults.agencyName),
     preheader: asString(raw.preheader, defaults.preheader),
+    logoUrl: asString(raw.logoUrl, defaults.logoUrl),
     highlightBanner: {
       imageUrl: asString(rawBanner.imageUrl, defaults.highlightBanner.imageUrl),
       title: asString(rawBanner.title, defaults.highlightBanner.title),
@@ -121,6 +123,7 @@ export const saveNewsletterState = async (value: NewsletterContent): Promise<New
     ...value,
     templateVersion: "v2" as const,
     updatedAt: new Date().toISOString(),
+    logoUrl: asString(value.logoUrl, defaultNewsletter().logoUrl),
     highlightBanner: {
       imageUrl: asString(value.highlightBanner?.imageUrl, defaultNewsletter().highlightBanner.imageUrl),
       title: asString(value.highlightBanner?.title, defaultNewsletter().highlightBanner.title),
