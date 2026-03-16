@@ -7,6 +7,12 @@ const defaultNewsletter = (): NewsletterContent => ({
   templateVersion: "v2",
   agencyName: "Horizonte Viagens",
   preheader: "Pacotes nacionais e internacionais da semana.",
+  highlightBanner: {
+    imageUrl:
+      "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80",
+    title: "Oferta destaque da semana",
+    description: "Pacote completo com passagem, hospedagem e suporte 24h para sua viagem sem preocupacoes.",
+  },
   nationalPackages: [
     defaultImage(
       "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
@@ -72,11 +78,20 @@ const normalizeNewsletter = (value: unknown): NewsletterContent => {
 
   const legacyNational = raw.nationalPackages ?? raw.destinations ?? raw.packages;
   const legacyInternational = raw.internationalPackages ?? raw.hotels;
+  const rawBanner =
+    typeof raw.highlightBanner === "object" && raw.highlightBanner !== null
+      ? (raw.highlightBanner as Record<string, unknown>)
+      : {};
 
   return {
     templateVersion: "v2",
     agencyName: asString(raw.agencyName, defaults.agencyName),
     preheader: asString(raw.preheader, defaults.preheader),
+    highlightBanner: {
+      imageUrl: asString(rawBanner.imageUrl, defaults.highlightBanner.imageUrl),
+      title: asString(rawBanner.title, defaults.highlightBanner.title),
+      description: asString(rawBanner.description, defaults.highlightBanner.description),
+    },
     nationalPackages: normalizeImageArray(legacyNational, defaults.nationalPackages),
     internationalPackages: normalizeImageArray(legacyInternational, defaults.internationalPackages),
     updatedAt: asString(raw.updatedAt, defaults.updatedAt),
@@ -106,6 +121,11 @@ export const saveNewsletterState = async (value: NewsletterContent): Promise<New
     ...value,
     templateVersion: "v2" as const,
     updatedAt: new Date().toISOString(),
+    highlightBanner: {
+      imageUrl: asString(value.highlightBanner?.imageUrl, defaultNewsletter().highlightBanner.imageUrl),
+      title: asString(value.highlightBanner?.title, defaultNewsletter().highlightBanner.title),
+      description: asString(value.highlightBanner?.description, defaultNewsletter().highlightBanner.description),
+    },
     nationalPackages: normalizeImageArray(value.nationalPackages, defaultNewsletter().nationalPackages),
     internationalPackages: normalizeImageArray(value.internationalPackages, defaultNewsletter().internationalPackages),
   };

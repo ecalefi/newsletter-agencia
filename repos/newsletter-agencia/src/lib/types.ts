@@ -16,10 +16,17 @@ export interface PackageImage {
   caption: string;
 }
 
+export interface NewsletterBanner {
+  imageUrl: string;
+  title: string;
+  description: string;
+}
+
 export interface NewsletterContent {
   templateVersion: "v2";
   agencyName: string;
   preheader: string;
+  highlightBanner: NewsletterBanner;
   nationalPackages: PackageImage[];
   internationalPackages: PackageImage[];
   updatedAt: string;

@@ -27,6 +27,27 @@ const getFixedLogoUrl = (): string => {
 
 const safeImage = (value: string): string => (value.trim() ? escapeHtml(value) : fallbackImage);
 
+const renderHighlightBanner = (content: NewsletterContent): string => `
+  <tr>
+    <td style="padding:14px 16px 8px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:14px;overflow:hidden;border:1px solid #cfe4f4;background:#eef7ff;">
+        <tr>
+          <td style="padding:10px 10px 0;">
+            <img src="${safeImage(content.highlightBanner.imageUrl)}" alt="${escapeHtml(content.highlightBanner.title)}" width="100%" style="display:block;height:220px;object-fit:cover;border-radius:10px;" />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 16px 16px;font-family:Arial,Helvetica,sans-serif;">
+            <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#2a79be;font-weight:700;">Oferta destaque</div>
+            <div style="margin-top:6px;font-size:24px;line-height:1.2;color:#103a57;font-weight:700;">${escapeHtml(content.highlightBanner.title)}</div>
+            <div style="margin-top:8px;font-size:15px;line-height:1.6;color:#274b63;">${escapeHtml(content.highlightBanner.description)}</div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+`;
+
 const renderSection = (title: string, cards: PackageImage[]): string => `
   <tr>
     <td style="padding:26px 20px 10px;">
@@ -62,7 +83,7 @@ const renderSection = (title: string, cards: PackageImage[]): string => `
                   </tr>
                   <tr>
                     <td style="padding:0 12px 14px;">
-                      <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#1f3c53;">
+                      <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#1f3c53;">
                         ${escapeHtml(card.caption)}
                       </p>
                     </td>
@@ -102,13 +123,21 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
               </td>
             </tr>
 
+            ${renderHighlightBanner(content)}
+
             ${renderSection("3 Pacotes Nacionais", content.nationalPackages)}
             ${renderSection("3 Pacotes Internacionais", content.internationalPackages)}
 
             <tr>
-              <td style="padding:18px 20px;background:#082d44;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#c8dfef;line-height:1.7;text-align:center;">
-                Conteudo atualizado em ${escapeHtml(new Date(content.updatedAt).toLocaleString("pt-BR"))}<br />
-                Casa de Viagens | Ofertas sujeitas a disponibilidade
+              <td style="padding:18px 20px;background:#082d44;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#c8dfef;line-height:1.75;text-align:center;">
+                Conteudo atualizado em ${escapeHtml(new Date(content.updatedAt).toLocaleString("pt-BR"))}<br /><br />
+                Casa Mundo de Viagens e Negocios em Turismo Ltda<br />
+                CNPJ: 04.078.769/0001-83<br />
+                Cadastur: 070001521000010 Casa de Viagens<br />
+                (61) 3202-1245<br />
+                carlosvieira@casadeviagens.com.br<br />
+                St Setor Comercial Sul Quadra 02 Bloco B, 20 - Sala 911 - Asa Sul<br />
+                Brasilia / DF - CEP: 70318-900
               </td>
             </tr>
           </table>
@@ -123,10 +152,23 @@ export const renderNewsletterText = (content: NewsletterContent): string => {
   lines.push(content.agencyName);
   lines.push(content.preheader);
   lines.push("");
+  lines.push(`Banner: ${content.highlightBanner.title}`);
+  lines.push(content.highlightBanner.description);
+  lines.push(`Imagem do banner: ${content.highlightBanner.imageUrl}`);
+  lines.push("");
   lines.push("3 Pacotes Nacionais:");
   content.nationalPackages.forEach((card, index) => lines.push(`${index + 1}. ${card.caption} - ${card.imageUrl}`));
   lines.push("");
   lines.push("3 Pacotes Internacionais:");
   content.internationalPackages.forEach((card, index) => lines.push(`${index + 1}. ${card.caption} - ${card.imageUrl}`));
+  lines.push("");
+  lines.push("Casa Mundo de Viagens e Negocios em Turismo Ltda");
+  lines.push("CNPJ: 04.078.769/0001-83");
+  lines.push("Cadastur: 070001521000010 Casa de Viagens");
+  lines.push("(61) 3202-1245");
+  lines.push("carlosvieira@casadeviagens.com.br");
+  lines.push("St Setor Comercial Sul Quadra 02 Bloco B, 20 - Sala 911 - Asa Sul");
+  lines.push("Brasilia / DF");
+  lines.push("CEP: 70318-900");
   return lines.join("\n");
 };
