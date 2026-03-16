@@ -19,6 +19,18 @@ const validateNewsletter = (data: NewsletterContent): string | null => {
     return "Informe o preheader";
   }
 
+  if (!data.highlightBanner?.imageUrl?.trim()) {
+    return "Preencha a imagem do banner principal";
+  }
+
+  if (!data.highlightBanner?.title?.trim()) {
+    return "Preencha o titulo do banner principal";
+  }
+
+  if (!data.highlightBanner?.description?.trim()) {
+    return "Preencha a descricao do banner principal";
+  }
+
   const missingNational = data.nationalPackages.some((item) => !item.imageUrl.trim());
   if (missingNational) {
     return "Preencha todas as 3 imagens de pacotes nacionais";

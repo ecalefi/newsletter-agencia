@@ -7,6 +7,11 @@ const defaultState: NewsletterContent = {
   templateVersion: "v2",
   agencyName: "",
   preheader: "",
+  highlightBanner: {
+    imageUrl: "",
+    title: "",
+    description: "",
+  },
   nationalPackages: Array.from({ length: 3 }, () => ({ imageUrl: "", caption: "" })),
   internationalPackages: Array.from({ length: 3 }, () => ({ imageUrl: "", caption: "" })),
   updatedAt: "",
@@ -70,6 +75,30 @@ export default function PromocoesPage() {
       nextGroup[index] = { ...nextGroup[index], caption };
       return { ...prev, [group]: nextGroup };
     });
+  };
+
+  const handleBannerUpload = async (file: File | null) => {
+    if (!file) {
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+    try {
+      const url = await uploadImage(file);
+      setNewsletter((prev) => ({
+        ...prev,
+        highlightBanner: {
+          ...prev.highlightBanner,
+          imageUrl: url,
+        },
+      }));
+      setMessage("Banner atualizado.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Falha no upload do banner");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSingleUpload = async (
@@ -181,9 +210,65 @@ export default function PromocoesPage() {
     <div className="space-y-6">
       <section className="card p-6">
         <h2 className="font-title text-2xl">Template simplificado</h2>
-          <p className="mt-2 text-[var(--color-muted)]">
+        <p className="mt-2 text-[var(--color-muted)]">
           Agora voce troca somente 6 imagens com seus respectivos textos: 3 pacotes nacionais e 3 pacotes internacionais.
         </p>
+      </section>
+
+      <section className="card p-6">
+        <h3 className="font-title text-xl">Banner principal (editavel)</h3>
+        <p className="mt-2 text-sm text-[var(--color-muted)]">
+          Esse banner aparece no topo da newsletter para destacar a oferta principal da semana.
+        </p>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <label className="text-sm font-semibold text-[var(--color-ink)]">
+            Titulo do banner
+            <input
+              className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
+              value={newsletter.highlightBanner.title}
+              onChange={(event) =>
+                setNewsletter((prev) => ({
+                  ...prev,
+                  highlightBanner: { ...prev.highlightBanner, title: event.target.value },
+                }))
+              }
+            />
+          </label>
+          <label className="text-sm font-semibold text-[var(--color-ink)]">
+            Descricao do banner
+            <textarea
+              className="mt-1 min-h-[88px] w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-normal"
+              value={newsletter.highlightBanner.description}
+              onChange={(event) =>
+                setNewsletter((prev) => ({
+                  ...prev,
+                  highlightBanner: { ...prev.highlightBanner, description: event.target.value },
+                }))
+              }
+            />
+          </label>
+        </div>
+        <div className="mt-4 rounded-lg border border-[var(--color-border)] bg-white p-4">
+          <label className="block text-sm font-semibold text-[var(--color-ink)]">
+            Imagem do banner
+            <input
+              className="mt-2 block w-full text-xs"
+              type="file"
+              accept="image/*"
+              onChange={(event) => void handleBannerUpload(event.target.files?.[0] ?? null)}
+            />
+          </label>
+          {newsletter.highlightBanner.imageUrl ? (
+            <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-soft)] p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={newsletter.highlightBanner.imageUrl}
+                alt="Banner principal"
+                className="h-40 w-full rounded object-cover"
+              />
+            </div>
+          ) : null}
+        </div>
       </section>
 
       <section className="card p-6">
