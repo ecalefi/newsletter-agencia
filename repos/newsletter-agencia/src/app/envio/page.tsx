@@ -8,7 +8,7 @@ export default function EnvioPage() {
   const [previewText, setPreviewText] = useState("Pacotes com condicoes especiais por tempo limitado.");
   const [mode, setMode] = useState<"test" | "weekly">("test");
   const [testEmail, setTestEmail] = useState("");
-  const [webhookUrl, setWebhookUrl] = useState("https://hooks.conectai.online/webhook/newletter");
+  const [webhookUrl, setWebhookUrl] = useState("https://prd.calefi.shop/webhook/newsletter-send");
   const [message, setMessage] = useState("");
   const [n8nMessage, setN8nMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -98,7 +98,7 @@ export default function EnvioPage() {
   return (
     <div className="space-y-6">
       <section className="card p-6">
-        <h2 className="font-title text-2xl">Disparo via Brevo SMTP</h2>
+        <h2 className="font-title text-2xl">Disparo via Brevo API</h2>
         <p className="mt-2 text-[var(--color-muted)]">
           Dispare em modo teste para validacao ou em modo semanal para toda base ativa.
         </p>

@@ -1,5 +1,3 @@
-import nodemailer from "nodemailer";
-
 const getRequiredEnv = (name: string): string => {
   const value = process.env[name];
   if (!value) {
@@ -8,19 +6,8 @@ const getRequiredEnv = (name: string): string => {
   return value;
 };
 
-const getTransporter = () => {
-  const host = process.env.BREVO_SMTP_HOST ?? "smtp-relay.brevo.com";
-  const port = Number(process.env.BREVO_SMTP_PORT ?? "587");
-  const user = getRequiredEnv("BREVO_SMTP_USER");
-  const pass = getRequiredEnv("BREVO_SMTP_PASS");
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: false,
-    auth: { user, pass },
-  });
-};
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+const FIXED_SENDER_EMAIL = "promo@casadeviagens.com";
 
 export interface SmtpRecipient {
   email: string;
@@ -35,21 +22,42 @@ export interface SendSmtpPayload {
 }
 
 export const sendBrevoSmtpMail = async (payload: SendSmtpPayload): Promise<string> => {
-  const senderEmail = getRequiredEnv("BREVO_SENDER_EMAIL");
-  const senderName = process.env.BREVO_SENDER_NAME ?? "Newsletter";
+  const apiKey = getRequiredEnv("BREVO_API_KEY");
+  const senderName = process.env.BREVO_SENDER_NAME ?? "Casa de Viagens";
 
-  const transporter = getTransporter();
-  const info = await transporter.sendMail({
-    from: `${senderName} <${senderEmail}>`,
-    to: payload.to.name ? `${payload.to.name} <${payload.to.email}>` : payload.to.email,
-    subject: payload.subject,
-    html: payload.html,
-    text: payload.text,
+  const response = await fetch(BREVO_API_URL, {
+    method: "POST",
     headers: {
-      "X-Mailer": "newsletter-agencia",
-      "X-Template-Version": "v2",
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "api-key": apiKey,
     },
+    body: JSON.stringify({
+      sender: {
+        email: FIXED_SENDER_EMAIL,
+        name: senderName,
+      },
+      to: [
+        {
+          email: payload.to.email,
+          name: payload.to.name,
+        },
+      ],
+      subject: payload.subject,
+      htmlContent: payload.html,
+      textContent: payload.text,
+      headers: {
+        "X-Mailer": "newsletter-agencia",
+        "X-Template-Version": "v2",
+      },
+    }),
   });
 
-  return info.messageId;
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Brevo API error ${response.status}: ${errorText.slice(0, 400)}`);
+  }
+
+  const result = (await response.json()) as { messageId?: string };
+  return result.messageId ?? "brevo-message-id-not-returned";
 };
