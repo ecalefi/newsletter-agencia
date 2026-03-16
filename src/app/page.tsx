@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 interface DashboardSummary {
   activeContacts: number;
   campaignsCount: number;
-  destinations: number;
-  hotels: number;
+  nationalPackages: number;
+  internationalPackages: number;
   lastCampaign: { sent_at: string; status: string } | null;
 }
 
@@ -15,8 +15,8 @@ export default function Home() {
   const [summary, setSummary] = useState<DashboardSummary>({
     activeContacts: 0,
     campaignsCount: 0,
-    destinations: 0,
-    hotels: 0,
+    nationalPackages: 0,
+    internationalPackages: 0,
     lastCampaign: null,
   });
 
@@ -46,12 +46,12 @@ export default function Home() {
           <p className="mt-2 text-3xl font-bold text-[var(--color-ink)]">{summary.activeContacts}</p>
         </article>
         <article className="card p-5">
-          <p className="text-sm text-[var(--color-muted)]">Destinos no template</p>
-          <p className="mt-2 text-3xl font-bold text-[var(--color-ink)]">{summary.destinations}</p>
+          <p className="text-sm text-[var(--color-muted)]">Pacotes nacionais</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--color-ink)]">{summary.nationalPackages}</p>
         </article>
         <article className="card p-5">
-          <p className="text-sm text-[var(--color-muted)]">Hoteis no template</p>
-          <p className="mt-2 text-3xl font-bold text-[var(--color-ink)]">{summary.hotels}</p>
+          <p className="text-sm text-[var(--color-muted)]">Pacotes internacionais</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--color-ink)]">{summary.internationalPackages}</p>
         </article>
         <article className="card p-5">
           <p className="text-sm text-[var(--color-muted)]">Ultimo disparo</p>
@@ -65,8 +65,8 @@ export default function Home() {
         <h3 className="font-title text-2xl">Checklist rapido</h3>
         <div className="mt-4 grid gap-3 text-sm text-[var(--color-ink)] md:grid-cols-2">
           <p>1. Importar ou cadastrar os contatos da semana.</p>
-          <p>2. Revisar os 3 cards de destinos e 3 de hoteis.</p>
-          <p>3. Ajustar os 2 banners e os 3 pacotes principais.</p>
+          <p>2. Revisar as 3 imagens de pacotes nacionais.</p>
+          <p>3. Revisar as 3 imagens de pacotes internacionais.</p>
           <p>4. Validar preview e disparar teste no proprio email.</p>
         </div>
         <div className="mt-6 flex flex-wrap gap-3">

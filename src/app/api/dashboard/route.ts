@@ -12,15 +12,15 @@ export async function GET() {
   ]);
 
   const value = (newsletterRow?.value ?? {}) as {
-    destinations?: unknown[];
-    hotels?: unknown[];
+    nationalPackages?: unknown[];
+    internationalPackages?: unknown[];
   };
 
   return NextResponse.json({
     activeContacts: activeContacts ?? 0,
     campaignsCount: campaignsCount ?? 0,
-    destinations: value.destinations?.length ?? 0,
-    hotels: value.hotels?.length ?? 0,
+    nationalPackages: value.nationalPackages?.length ?? 0,
+    internationalPackages: value.internationalPackages?.length ?? 0,
     lastCampaign: lastCampaign ?? null,
   });
 }

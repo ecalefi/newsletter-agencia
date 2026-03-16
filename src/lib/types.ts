@@ -11,62 +11,17 @@ export interface Contact {
   createdAt: string;
 }
 
-export interface SectionCard {
-  title: string;
-  subtitle: string;
-  description: string;
-  price: string;
+export interface PackageImage {
   imageUrl: string;
-  ctaUrl: string;
-  ctaLabel: string;
-}
-
-export interface ReviewCard {
-  name: string;
-  role: string;
-  text: string;
-  rating: string;
-  avatarUrl: string;
-}
-
-export interface BannerBlock {
-  title: string;
-  subtitle: string;
-  imageUrl: string;
-  ctaUrl: string;
-  ctaLabel: string;
-}
-
-export interface HeroBlock {
-  title: string;
-  subtitle: string;
-  imageUrl: string;
-  ctaLabel: string;
-  ctaUrl: string;
-}
-
-export interface FooterBlock {
-  email: string;
-  phone: string;
-  address: string;
-  website: string;
-  instagram: string;
-  unsubscribeUrl: string;
+  caption: string;
 }
 
 export interface NewsletterContent {
-  templateVersion: "v1";
+  templateVersion: "v2";
   agencyName: string;
   preheader: string;
-  logoUrl: string;
-  hero: HeroBlock;
-  banner1: BannerBlock;
-  banner2: BannerBlock;
-  destinations: SectionCard[];
-  hotels: SectionCard[];
-  packages: SectionCard[];
-  reviews: ReviewCard[];
-  footer: FooterBlock;
+  nationalPackages: PackageImage[];
+  internationalPackages: PackageImage[];
   updatedAt: string;
 }
 
