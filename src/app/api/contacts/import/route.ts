@@ -5,19 +5,36 @@ import * as XLSX from "xlsx";
 const isValidEmail = (value: string): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.toLowerCase());
 
+const cellToString = (value: unknown): string => {
+  if (typeof value === "string") {
+    return value.trim();
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return String(value).trim();
+  }
+
+  return "";
+};
+
+const normalizeWhatsapp = (value: string): string =>
+  value
+    .trim()
+    .replace(/\s+/g, " ");
+
 const readCell = (row: Record<string, unknown>, keys: string[]): string => {
   for (const key of keys) {
-    const exact = row[key];
-    if (typeof exact === "string" && exact.trim()) {
-      return exact.trim();
+    const exact = cellToString(row[key]);
+    if (exact) {
+      return exact;
     }
 
     const found = Object.entries(row).find(
-      ([name, value]) => name.toLowerCase().trim() === key.toLowerCase() && typeof value === "string" && value.trim(),
+      ([name, value]) => name.toLowerCase().trim() === key.toLowerCase() && cellToString(value),
     );
 
     if (found) {
-      return String(found[1]).trim();
+      return cellToString(found[1]);
     }
   }
 
@@ -53,11 +70,14 @@ export async function POST(request: Request) {
 
   const knownEmails = new Set((existing ?? []).map((item) => item.email));
   const errors: Array<{ row: number; message: string }> = [];
-  const inserted: Array<{ name: string; email: string; source: "spreadsheet"; status: "active" }> = [];
+  const inserted: Array<{ name: string; email: string; whatsapp: string | null; source: "spreadsheet"; status: "active" }> = [];
 
   rows.forEach((row, index) => {
     const email = readCell(row, ["email", "e-mail", "mail"]).toLowerCase();
     const name = readCell(row, ["nome", "name"]);
+    const whatsapp = normalizeWhatsapp(
+      readCell(row, ["whatsapp", "telefone", "telefone_whatsapp", "celular", "phone", "mobile"]),
+    );
 
     if (!email) {
       errors.push({ row: index + 2, message: "Email ausente" });
@@ -77,6 +97,7 @@ export async function POST(request: Request) {
     inserted.push({
       name: name || email.split("@")[0],
       email,
+      whatsapp: whatsapp || null,
       source: "spreadsheet",
       status: "active",
     });

@@ -8,8 +8,11 @@ export default function EnvioPage() {
   const [previewText, setPreviewText] = useState("Pacotes com condicoes especiais por tempo limitado.");
   const [mode, setMode] = useState<"test" | "weekly">("test");
   const [testEmail, setTestEmail] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState("https://hooks.conectai.online/webhook/newletter");
   const [message, setMessage] = useState("");
+  const [n8nMessage, setN8nMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [n8nLoading, setN8nLoading] = useState(false);
   const [logs, setLogs] = useState<CampaignLog[]>([]);
 
   const fetchLogs = async () => {
@@ -55,6 +58,40 @@ export default function EnvioPage() {
       setMessage(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onPushN8n = async () => {
+    setN8nLoading(true);
+    setN8nMessage("");
+
+    try {
+      const response = await fetch("/api/n8n/push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ webhookUrl, subject }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        ok?: boolean;
+        status?: number;
+        contactsSent?: number;
+      };
+
+      if (!response.ok) {
+        setN8nMessage(payload.error ?? "Falha ao enviar payload para n8n");
+        return;
+      }
+
+      setN8nMessage(
+        `Webhook chamado. status=${payload.status ?? "n/a"}, contatos=${payload.contactsSent ?? 0}`,
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Falha inesperada ao acionar webhook";
+      setN8nMessage(message);
+    } finally {
+      setN8nLoading(false);
     }
   };
 
@@ -117,6 +154,32 @@ export default function EnvioPage() {
           {message ? <span className="text-sm font-semibold text-[var(--color-primary)]">{message}</span> : null}
         </div>
       </form>
+
+      <section className="card grid gap-4 p-6">
+        <h3 className="font-title text-xl">Exportar para n8n</h3>
+        <p className="text-sm text-[var(--color-muted)]">
+          Gera HTML/texto com lista de contatos ativos (nome, email, whatsapp) e envia para seu webhook.
+        </p>
+        <label className="text-sm font-semibold">
+          Webhook n8n
+          <input
+            className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
+            value={webhookUrl}
+            onChange={(event) => setWebhookUrl(event.target.value)}
+          />
+        </label>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            className="btn bg-[var(--color-accent)] px-4 py-2 text-white"
+            type="button"
+            disabled={n8nLoading}
+            onClick={() => void onPushN8n()}
+          >
+            Enviar payload para n8n
+          </button>
+          {n8nMessage ? <span className="text-sm font-semibold text-[var(--color-primary)]">{n8nMessage}</span> : null}
+        </div>
+      </section>
 
       <section className="card overflow-x-auto p-0">
         <table className="w-full min-w-[720px]">
