@@ -122,7 +122,7 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
             <tr>
               <td style="padding:26px 22px;background:linear-gradient(135deg,#0f6eb7 0%,#0a4e8d 100%);color:#ffffff;font-family:Arial,Helvetica,sans-serif;">
                 <div style="display:inline-block;background:#ffffff;border-radius:12px;padding:10px 12px;">
-                  <img src="${safeLogo(content.logoUrl)}" alt="Horizonte Viagens" width="220" style="display:block;max-width:100%;height:auto;" />
+                  <img src="${safeLogo(content.logoUrl)}" alt="Casa de Viagens" width="220" style="display:block;max-width:100%;height:auto;" />
                 </div>
                 <div style="margin-top:14px;display:inline-block;padding:6px 10px;border-radius:999px;background:#ffffff1c;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;font-weight:700;">
                   Newsletter semanal

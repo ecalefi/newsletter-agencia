@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { CampaignLog } from "@/lib/types";
 
 export default function EnvioPage() {
-  const [subject, setSubject] = useState("Ofertas da semana - Horizonte Viagens");
+  const [subject, setSubject] = useState("Ofertas da semana - Casa de Viagens");
   const [previewText, setPreviewText] = useState("Pacotes com condicoes especiais por tempo limitado.");
   const [mode, setMode] = useState<"test" | "weekly">("test");
   const [testEmail, setTestEmail] = useState("");

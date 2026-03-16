@@ -34,7 +34,7 @@ export default function RootLayout({
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-primary)]">
-                  Horizonte Viagens
+                  Casa de Viagens
                 </p>
                 <h1 className="font-title text-2xl text-[var(--color-ink)]">Central de Newsletter</h1>
               </div>

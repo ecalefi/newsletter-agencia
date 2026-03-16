@@ -5,7 +5,7 @@ const defaultImage = (imageUrl: string, caption: string): PackageImage => ({ ima
 
 const defaultNewsletter = (): NewsletterContent => ({
   templateVersion: "v2",
-  agencyName: "Horizonte Viagens",
+  agencyName: "Casa de Viagens",
   preheader: "Pacotes nacionais e internacionais da semana.",
   logoUrl: "/logo-horizonte-viagens.svg",
   highlightBanner: {
