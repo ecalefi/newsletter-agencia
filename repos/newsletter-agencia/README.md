@@ -2,7 +2,7 @@
 
 Painel administrativo para montar newsletter semanal de turismo com template padrao:
 
-- contatos (`nome + email`) via cadastro manual e planilha
+- contatos (`nome + email + whatsapp`) via cadastro manual e planilha
 - template fixo com 2 banners full-width
 - 3 cards por secao (`destinations`, `hotels`, `packages`, `reviews`)
 - upload de imagens no Supabase Storage
@@ -16,6 +16,7 @@ Painel administrativo para montar newsletter semanal de turismo com template pad
 - Midia: Supabase Storage bucket `newsletter-assets`
 - Autenticacao do painel: login/senha (credenciais de ambiente)
 - Envio: endpoint do app -> SMTP Brevo
+- Integracao n8n: exporta payload completo (HTML + texto + contatos)
 
 ## Setup rapido
 
@@ -51,6 +52,7 @@ Abra `http://localhost:3000/login`.
 2. **Promocoes**: preencher hero, banners e cards do template e subir imagens.
 3. **Preview**: revisar HTML final da newsletter.
 4. **Envio**: acionar envio teste ou semanal (SMTP Brevo).
+5. **n8n**: enviar payload para webhook com `html`, `text` e `contacts`.
 
 ## Endpoints principais
 
@@ -58,6 +60,7 @@ Abra `http://localhost:3000/login`.
 - `POST /api/contacts/import`
 - `GET/PUT /api/newsletter`
 - `GET /api/newsletter/html`
+- `POST /api/n8n/push`
 - `POST /api/assets/upload`
 - `POST /api/send`
 - `GET /api/campaigns`

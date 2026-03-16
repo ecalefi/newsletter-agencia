@@ -13,6 +13,7 @@ export default function ContatosPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
@@ -37,7 +38,7 @@ export default function ContatosPage() {
       const response = await fetch("/api/contacts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, email, whatsapp }),
       });
 
       const payload = (await response.json()) as { error?: string };
@@ -49,6 +50,7 @@ export default function ContatosPage() {
 
       setName("");
       setEmail("");
+      setWhatsapp("");
       setMessage("Contato cadastrado com sucesso.");
       await fetchContacts();
     } finally {
@@ -123,6 +125,15 @@ export default function ContatosPage() {
               onChange={(event) => setEmail(event.target.value)}
             />
           </label>
+          <label className="block text-sm font-semibold text-[var(--color-ink)]">
+            WhatsApp
+            <input
+              className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
+              placeholder="+55 11 99999-9999"
+              value={whatsapp}
+              onChange={(event) => setWhatsapp(event.target.value)}
+            />
+          </label>
           <button className="btn bg-[var(--color-primary)] px-4 py-2 text-white" disabled={loading} type="submit">
             Salvar contato
           </button>
@@ -131,7 +142,7 @@ export default function ContatosPage() {
         <form className="card space-y-4 p-6" onSubmit={onImportSubmit}>
           <h3 className="font-title text-xl">Importar planilha</h3>
           <p className="text-sm text-[var(--color-muted)]">
-            Colunas aceitas: email/e-mail/mail e nome/name.
+            Colunas aceitas: email/e-mail/mail, nome/name e whatsapp/telefone/phone/mobile.
           </p>
           <input
             accept=".csv,.xlsx,.xls"
@@ -161,11 +172,12 @@ export default function ContatosPage() {
       {message ? <p className="text-sm font-semibold text-[var(--color-primary)]">{message}</p> : null}
 
       <section className="card overflow-x-auto p-0">
-        <table className="w-full min-w-[680px]">
+        <table className="w-full min-w-[820px]">
           <thead>
             <tr className="bg-[var(--color-bg-soft)] text-left text-sm text-[var(--color-ink)]">
               <th className="px-4 py-3">Nome</th>
               <th className="px-4 py-3">Email</th>
+              <th className="px-4 py-3">WhatsApp</th>
               <th className="px-4 py-3">Origem</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Cadastro</th>
@@ -176,6 +188,7 @@ export default function ContatosPage() {
               <tr key={contact.id} className="border-t border-[var(--color-border)] text-sm">
                 <td className="px-4 py-3">{contact.name}</td>
                 <td className="px-4 py-3">{contact.email}</td>
+                <td className="px-4 py-3">{contact.whatsapp || "-"}</td>
                 <td className="px-4 py-3">{contact.source}</td>
                 <td className="px-4 py-3">{contact.status}</td>
                 <td className="px-4 py-3">{new Date(contact.createdAt).toLocaleString("pt-BR")}</td>

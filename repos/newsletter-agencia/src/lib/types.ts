@@ -5,6 +5,7 @@ export interface Contact {
   id: string;
   name: string;
   email: string;
+  whatsapp: string;
   source: ContactSource;
   status: ContactStatus;
   createdAt: string;

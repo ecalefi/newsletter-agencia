@@ -4,10 +4,14 @@ create table if not exists public.contacts (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   email text not null unique,
+  whatsapp text,
   status text not null default 'active' check (status in ('active','unsubscribed')),
   source text not null default 'manual' check (source in ('manual','spreadsheet')),
   created_at timestamptz not null default now()
 );
+
+alter table public.contacts
+add column if not exists whatsapp text;
 
 create index if not exists idx_contacts_status on public.contacts(status);
 create index if not exists idx_contacts_created_at on public.contacts(created_at desc);
