@@ -29,23 +29,45 @@ const safeImage = (value: string): string => (value.trim() ? escapeHtml(value) :
 
 const renderSection = (title: string, cards: PackageImage[]): string => `
   <tr>
-    <td style="padding:22px 16px 10px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:700;color:#102f45;">
-      ${escapeHtml(title)}
+    <td style="padding:26px 20px 10px;">
+      <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#2a79be;font-weight:700;text-align:center;">
+        Promocoes da semana
+      </div>
+      <div style="margin-top:8px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:30px;line-height:1.15;font-weight:700;color:#12344f;">
+        ${escapeHtml(title)}
+      </div>
     </td>
   </tr>
   <tr>
-    <td style="padding:0 8px 16px;">
+    <td style="padding:0 10px 12px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           ${cards
             .slice(0, 3)
             .map(
-                (card, index) => `
+              (card, index) => `
               <td width="33.33%" valign="top" style="padding:8px;">
-                <img src="${safeImage(card.imageUrl)}" alt="${escapeHtml(`${title} ${index + 1}`)}" width="100%" style="display:block;height:180px;object-fit:cover;border-radius:10px;" />
-                <p style="margin:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#2d4658;">
-                  ${escapeHtml(card.caption)}
-                </p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d6e6f2;border-radius:12px;overflow:hidden;background:#f7fbff;">
+                  <tr>
+                    <td style="padding:10px 10px 6px;">
+                      <div style="display:inline-block;padding:4px 8px;border-radius:999px;background:#e4f1fc;color:#1762a5;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;line-height:1;">
+                        Roteiro ${index + 1}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:0 10px 10px;">
+                      <img src="${safeImage(card.imageUrl)}" alt="${escapeHtml(`${title} ${index + 1}`)}" width="100%" style="display:block;height:180px;object-fit:cover;border-radius:10px;" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:0 12px 14px;">
+                      <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#1f3c53;">
+                        ${escapeHtml(card.caption)}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
               </td>
             `,
             )
@@ -63,18 +85,20 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(content.agencyName)}</title>
   </head>
-  <body style="margin:0;padding:0;background:#eef3f8;">
+  <body style="margin:0;padding:0;background:#edf4fb;">
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(content.preheader)}</div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef3f8;padding:20px 0;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#edf4fb;padding:24px 0;">
       <tr>
         <td align="center">
-          <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="width:640px;max-width:640px;background:#ffffff;border-radius:12px;overflow:hidden;">
+          <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="width:640px;max-width:640px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #d8e7f3;">
             <tr>
-              <td style="padding:22px 20px;background:#0f6eb7;color:#ffffff;font-family:Arial,Helvetica,sans-serif;">
+              <td style="padding:26px 22px;background:linear-gradient(135deg,#0f6eb7 0%,#0a4e8d 100%);color:#ffffff;font-family:Arial,Helvetica,sans-serif;">
                 <img src="${escapeHtml(getFixedLogoUrl())}" alt="Horizonte Viagens" width="220" style="display:block;max-width:100%;height:auto;" />
-                <div style="font-size:14px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.85;">Newsletter de ofertas</div>
-                <div style="margin-top:8px;font-size:34px;line-height:1.1;font-weight:700;">${escapeHtml(content.agencyName)}</div>
-                <div style="margin-top:10px;font-size:14px;line-height:1.5;color:#dcecff;">${escapeHtml(content.preheader)}</div>
+                <div style="margin-top:14px;display:inline-block;padding:6px 10px;border-radius:999px;background:#ffffff1c;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;font-weight:700;">
+                  Newsletter semanal
+                </div>
+                <div style="margin-top:12px;font-size:34px;line-height:1.08;font-weight:700;">${escapeHtml(content.agencyName)}</div>
+                <div style="margin-top:10px;font-size:14px;line-height:1.55;color:#d9eefe;max-width:520px;">${escapeHtml(content.preheader)}</div>
               </td>
             </tr>
 
@@ -82,8 +106,9 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
             ${renderSection("3 Pacotes Internacionais", content.internationalPackages)}
 
             <tr>
-              <td style="padding:18px 20px;background:#072d43;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#c8dfef;line-height:1.6;text-align:center;">
-                Conteudo atualizado em ${escapeHtml(new Date(content.updatedAt).toLocaleString("pt-BR"))}
+              <td style="padding:18px 20px;background:#082d44;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#c8dfef;line-height:1.7;text-align:center;">
+                Conteudo atualizado em ${escapeHtml(new Date(content.updatedAt).toLocaleString("pt-BR"))}<br />
+                Casa de Viagens | Ofertas sujeitas a disponibilidade
               </td>
             </tr>
           </table>
