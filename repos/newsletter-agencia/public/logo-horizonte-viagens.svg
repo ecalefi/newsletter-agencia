@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="60" viewBox="0 0 260 60" role="img" aria-label="Horizonte Viagens">
+  <rect width="260" height="60" rx="10" fill="#ffffff" />
+  <circle cx="34" cy="30" r="14" fill="#0f6eb7" />
+  <path d="M20 34c7-7 17-7 24 0" fill="none" stroke="#d7ecff" stroke-width="3" stroke-linecap="round" />
+  <text x="56" y="28" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#0f6eb7">
+    Horizonte
+  </text>
+  <text x="56" y="44" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#0f6eb7">
+    Viagens
+  </text>
+</svg>

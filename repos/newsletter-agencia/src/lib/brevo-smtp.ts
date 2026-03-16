@@ -47,7 +47,7 @@ export const sendBrevoSmtpMail = async (payload: SendSmtpPayload): Promise<strin
     text: payload.text,
     headers: {
       "X-Mailer": "newsletter-agencia",
-      "X-Template-Version": "v1",
+      "X-Template-Version": "v2",
     },
   });
 

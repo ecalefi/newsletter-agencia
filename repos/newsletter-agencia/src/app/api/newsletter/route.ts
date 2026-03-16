@@ -3,24 +3,40 @@ import { NewsletterContent } from "@/lib/types";
 import { NextResponse } from "next/server";
 
 const validateNewsletter = (data: NewsletterContent): string | null => {
-  if (data.destinations.length !== 3) {
-    return "A secao de destinos deve conter 3 cards";
+  if (data.nationalPackages.length !== 3) {
+    return "A secao de pacotes nacionais deve conter 3 imagens";
   }
 
-  if (data.hotels.length !== 3) {
-    return "A secao de hoteis deve conter 3 cards";
+  if (data.internationalPackages.length !== 3) {
+    return "A secao de pacotes internacionais deve conter 3 imagens";
   }
 
-  if (data.packages.length !== 3) {
-    return "A secao de pacotes deve conter 3 cards";
+  if (!data.agencyName.trim()) {
+    return "Informe o nome da agencia";
   }
 
-  if (data.reviews.length !== 3) {
-    return "A secao de reviews deve conter 3 cards";
+  if (!data.preheader.trim()) {
+    return "Informe o preheader";
   }
 
-  if (!data.hero.title.trim() || !data.hero.imageUrl.trim()) {
-    return "Preencha titulo e imagem do hero";
+  const missingNational = data.nationalPackages.some((item) => !item.imageUrl.trim());
+  if (missingNational) {
+    return "Preencha todas as 3 imagens de pacotes nacionais";
+  }
+
+  const missingNationalCaption = data.nationalPackages.some((item) => !item.caption.trim());
+  if (missingNationalCaption) {
+    return "Preencha os textos dos 3 pacotes nacionais";
+  }
+
+  const missingInternational = data.internationalPackages.some((item) => !item.imageUrl.trim());
+  if (missingInternational) {
+    return "Preencha todas as 3 imagens de pacotes internacionais";
+  }
+
+  const missingInternationalCaption = data.internationalPackages.some((item) => !item.caption.trim());
+  if (missingInternationalCaption) {
+    return "Preencha os textos dos 3 pacotes internacionais";
   }
 
   return null;
@@ -33,7 +49,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   const payload = (await request.json()) as NewsletterContent;
-  payload.templateVersion = "v1";
+  payload.templateVersion = "v2";
   payload.updatedAt = new Date().toISOString();
   const error = validateNewsletter(payload);
 
