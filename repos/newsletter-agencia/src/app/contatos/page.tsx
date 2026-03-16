@@ -95,6 +95,56 @@ export default function ContatosPage() {
     }
   };
 
+  const onStatusToggle = async (contact: Contact) => {
+    setLoading(true);
+    setMessage("");
+    try {
+      const nextStatus = contact.status === "active" ? "unsubscribed" : "active";
+      const response = await fetch("/api/contacts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: contact.id, status: nextStatus }),
+      });
+
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setMessage(payload.error ?? "Falha ao atualizar status");
+        return;
+      }
+
+      setMessage(`Status atualizado para ${nextStatus}.`);
+      await fetchContacts();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onDeleteContact = async (contact: Contact) => {
+    const confirmed = window.confirm(`Excluir contato ${contact.email}?`);
+    if (!confirmed) {
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/contacts?id=${encodeURIComponent(contact.id)}`, {
+        method: "DELETE",
+      });
+
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setMessage(payload.error ?? "Falha ao excluir contato");
+        return;
+      }
+
+      setMessage("Contato excluido com sucesso.");
+      await fetchContacts();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="card p-6">
@@ -181,6 +231,7 @@ export default function ContatosPage() {
               <th className="px-4 py-3">Origem</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Cadastro</th>
+              <th className="px-4 py-3">Acoes</th>
             </tr>
           </thead>
           <tbody>
@@ -192,6 +243,26 @@ export default function ContatosPage() {
                 <td className="px-4 py-3">{contact.source}</td>
                 <td className="px-4 py-3">{contact.status}</td>
                 <td className="px-4 py-3">{new Date(contact.createdAt).toLocaleString("pt-BR")}</td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      className="btn border border-[var(--color-border)] bg-white px-3 py-1 text-xs"
+                      type="button"
+                      disabled={loading}
+                      onClick={() => void onStatusToggle(contact)}
+                    >
+                      {contact.status === "active" ? "Desativar" : "Ativar"}
+                    </button>
+                    <button
+                      className="btn border border-red-200 bg-red-50 px-3 py-1 text-xs text-red-700"
+                      type="button"
+                      disabled={loading}
+                      onClick={() => void onDeleteContact(contact)}
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -26,6 +26,13 @@ const getFixedLogoUrl = (): string => {
 };
 
 const safeImage = (value: string): string => (value.trim() ? escapeHtml(value) : fallbackImage);
+const safeLogo = (contentLogoUrl: string): string => {
+  if (contentLogoUrl.trim()) {
+    return escapeHtml(contentLogoUrl);
+  }
+
+  return escapeHtml(getFixedLogoUrl());
+};
 
 const renderHighlightBanner = (content: NewsletterContent): string => `
   <tr>
@@ -114,7 +121,9 @@ export const renderNewsletterHtml = (content: NewsletterContent): string => `<!d
           <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="width:640px;max-width:640px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #d8e7f3;">
             <tr>
               <td style="padding:26px 22px;background:linear-gradient(135deg,#0f6eb7 0%,#0a4e8d 100%);color:#ffffff;font-family:Arial,Helvetica,sans-serif;">
-                <img src="${escapeHtml(getFixedLogoUrl())}" alt="Horizonte Viagens" width="220" style="display:block;max-width:100%;height:auto;" />
+                <div style="display:inline-block;background:#ffffff;border-radius:12px;padding:10px 12px;">
+                  <img src="${safeLogo(content.logoUrl)}" alt="Horizonte Viagens" width="220" style="display:block;max-width:100%;height:auto;" />
+                </div>
                 <div style="margin-top:14px;display:inline-block;padding:6px 10px;border-radius:999px;background:#ffffff1c;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;font-weight:700;">
                   Newsletter semanal
                 </div>

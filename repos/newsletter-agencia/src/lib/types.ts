@@ -26,6 +26,7 @@ export interface NewsletterContent {
   templateVersion: "v2";
   agencyName: string;
   preheader: string;
+  logoUrl: string;
   highlightBanner: NewsletterBanner;
   nationalPackages: PackageImage[];
   internationalPackages: PackageImage[];

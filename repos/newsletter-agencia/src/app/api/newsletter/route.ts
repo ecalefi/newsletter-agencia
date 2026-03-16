@@ -19,6 +19,10 @@ const validateNewsletter = (data: NewsletterContent): string | null => {
     return "Informe o preheader";
   }
 
+  if (!data.logoUrl?.trim()) {
+    return "Preencha a logo da newsletter";
+  }
+
   if (!data.highlightBanner?.imageUrl?.trim()) {
     return "Preencha a imagem do banner principal";
   }

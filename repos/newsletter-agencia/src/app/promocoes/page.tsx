@@ -7,6 +7,7 @@ const defaultState: NewsletterContent = {
   templateVersion: "v2",
   agencyName: "",
   preheader: "",
+  logoUrl: "",
   highlightBanner: {
     imageUrl: "",
     title: "",
@@ -96,6 +97,24 @@ export default function PromocoesPage() {
       setMessage("Banner atualizado.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Falha no upload do banner");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogoUpload = async (file: File | null) => {
+    if (!file) {
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+    try {
+      const url = await uploadImage(file);
+      setNewsletter((prev) => ({ ...prev, logoUrl: url }));
+      setMessage("Logo atualizada.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Falha no upload da logo");
     } finally {
       setLoading(false);
     }
@@ -213,6 +232,30 @@ export default function PromocoesPage() {
         <p className="mt-2 text-[var(--color-muted)]">
           Agora voce troca somente 6 imagens com seus respectivos textos: 3 pacotes nacionais e 3 pacotes internacionais.
         </p>
+      </section>
+
+      <section className="card p-6">
+        <h3 className="font-title text-xl">Logo (upload com fundo branco no template)</h3>
+        <p className="mt-2 text-sm text-[var(--color-muted)]">
+          Envie a logo para aparecer no cabecalho da newsletter com area branca de destaque.
+        </p>
+        <div className="mt-4 rounded-lg border border-[var(--color-border)] bg-white p-4">
+          <label className="block text-sm font-semibold text-[var(--color-ink)]">
+            Imagem da logo
+            <input
+              className="mt-2 block w-full text-xs"
+              type="file"
+              accept="image/*"
+              onChange={(event) => void handleLogoUpload(event.target.files?.[0] ?? null)}
+            />
+          </label>
+          {newsletter.logoUrl ? (
+            <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-white p-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={newsletter.logoUrl} alt="Logo da newsletter" className="h-16 w-auto max-w-full object-contain" />
+            </div>
+          ) : null}
+        </div>
       </section>
 
       <section className="card p-6">
