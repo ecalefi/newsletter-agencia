@@ -45,7 +45,7 @@ export default function RootLayout({
         </header>
         <main className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">{children}</main>
         <footer className="mx-auto w-full max-w-6xl px-4 pb-8 pt-4 text-sm text-[var(--color-muted)] md:px-6">
-          Fluxo: contatos no Supabase, gerador de template no painel e envio SMTP Brevo.
+          Fluxo: contatos no Supabase, gerador de template no painel e envio pela API Brevo.
         </footer>
       </body>
     </html>

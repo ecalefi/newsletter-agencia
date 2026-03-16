@@ -3,11 +3,11 @@
 Painel administrativo para montar newsletter semanal de turismo com template padrao:
 
 - contatos (`nome + email + whatsapp`) via cadastro manual e planilha
-- template fixo com 2 banners full-width
-- 3 cards por secao (`destinations`, `hotels`, `packages`, `reviews`)
+- template fixo com 6 slots (3 nacionais + 3 internacionais)
+- cada slot com imagem + texto abaixo
 - upload de imagens no Supabase Storage
 - preview HTML profissional e leve para email
-- disparo direto por SMTP da Brevo
+- disparo direto pela API da Brevo
 
 ## Arquitetura
 
@@ -15,7 +15,7 @@ Painel administrativo para montar newsletter semanal de turismo com template pad
 - Dados: Supabase Postgres (`contacts`, `app_state`, `campaign_logs`)
 - Midia: Supabase Storage bucket `newsletter-assets`
 - Autenticacao do painel: login/senha (credenciais de ambiente)
-- Envio: endpoint do app -> SMTP Brevo
+- Envio: endpoint do app -> API Brevo (`/v3/smtp/email`)
 - Integracao n8n: exporta payload completo (HTML + texto + contatos)
 
 ## Setup rapido
@@ -32,7 +32,7 @@ npm install
 cp .env.example .env.local
 ```
 
-Preencha `.env.local` com Supabase, credenciais admin e SMTP Brevo.
+Preencha `.env.local` com Supabase, credenciais admin e API key da Brevo.
 
 3) Crie schema no Supabase
 
@@ -49,9 +49,9 @@ Abra `http://localhost:3000/login`.
 ## Fluxo operacional
 
 1. **Contatos**: importar planilha/cadastrar manual.
-2. **Promocoes**: preencher hero, banners e cards do template e subir imagens.
+2. **Promocoes**: editar somente 6 imagens e os textos de cada bloco.
 3. **Preview**: revisar HTML final da newsletter.
-4. **Envio**: acionar envio teste ou semanal (SMTP Brevo).
+4. **Envio**: acionar envio teste ou semanal (API Brevo).
 5. **n8n**: enviar payload para webhook com `html`, `text` e `contacts`.
 
 ## Endpoints principais
@@ -70,5 +70,5 @@ Abra `http://localhost:3000/login`.
 
 - Configurar SPF, DKIM e DMARC no dominio de envio
 - Manter `SUPABASE_SERVICE_ROLE_KEY` apenas no servidor
-- Manter `BREVO_SMTP_PASS` apenas no servidor
+- Manter `BREVO_API_KEY` apenas no servidor
 - Fazer warm-up gradual da base antes de escalar disparos
