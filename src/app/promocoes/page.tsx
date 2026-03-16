@@ -3,6 +3,78 @@
 import { FormEvent, useEffect, useState } from "react";
 import { BannerBlock, NewsletterContent, ReviewCard, SectionCard } from "@/lib/types";
 
+interface ImageSlot {
+  id: string;
+  label: string;
+  read: (value: NewsletterContent) => string;
+}
+
+const IMAGE_SLOTS: ImageSlot[] = [
+  { id: "logo", label: "Logo", read: (value) => value.logoUrl },
+  { id: "hero", label: "Hero", read: (value) => value.hero.imageUrl },
+  { id: "banner1", label: "Banner 1", read: (value) => value.banner1.imageUrl },
+  { id: "banner2", label: "Banner 2", read: (value) => value.banner2.imageUrl },
+  { id: "destination-0", label: "Destination Card 1", read: (value) => value.destinations[0]?.imageUrl ?? "" },
+  { id: "destination-1", label: "Destination Card 2", read: (value) => value.destinations[1]?.imageUrl ?? "" },
+  { id: "destination-2", label: "Destination Card 3", read: (value) => value.destinations[2]?.imageUrl ?? "" },
+  { id: "hotel-0", label: "Hotel Card 1", read: (value) => value.hotels[0]?.imageUrl ?? "" },
+  { id: "hotel-1", label: "Hotel Card 2", read: (value) => value.hotels[1]?.imageUrl ?? "" },
+  { id: "hotel-2", label: "Hotel Card 3", read: (value) => value.hotels[2]?.imageUrl ?? "" },
+  { id: "package-0", label: "Package Card 1", read: (value) => value.packages[0]?.imageUrl ?? "" },
+  { id: "package-1", label: "Package Card 2", read: (value) => value.packages[1]?.imageUrl ?? "" },
+  { id: "package-2", label: "Package Card 3", read: (value) => value.packages[2]?.imageUrl ?? "" },
+  { id: "review-0", label: "Review Avatar 1", read: (value) => value.reviews[0]?.avatarUrl ?? "" },
+  { id: "review-1", label: "Review Avatar 2", read: (value) => value.reviews[1]?.avatarUrl ?? "" },
+  { id: "review-2", label: "Review Avatar 3", read: (value) => value.reviews[2]?.avatarUrl ?? "" },
+];
+
+const applyImageSlot = (value: NewsletterContent, slotId: string, imageUrl: string): NewsletterContent => {
+  switch (slotId) {
+    case "logo":
+      return { ...value, logoUrl: imageUrl };
+    case "hero":
+      return { ...value, hero: { ...value.hero, imageUrl } };
+    case "banner1":
+      return { ...value, banner1: { ...value.banner1, imageUrl } };
+    case "banner2":
+      return { ...value, banner2: { ...value.banner2, imageUrl } };
+    case "destination-0":
+    case "destination-1":
+    case "destination-2": {
+      const index = Number(slotId.split("-")[1]);
+      const next = [...value.destinations];
+      next[index] = { ...next[index], imageUrl };
+      return { ...value, destinations: next };
+    }
+    case "hotel-0":
+    case "hotel-1":
+    case "hotel-2": {
+      const index = Number(slotId.split("-")[1]);
+      const next = [...value.hotels];
+      next[index] = { ...next[index], imageUrl };
+      return { ...value, hotels: next };
+    }
+    case "package-0":
+    case "package-1":
+    case "package-2": {
+      const index = Number(slotId.split("-")[1]);
+      const next = [...value.packages];
+      next[index] = { ...next[index], imageUrl };
+      return { ...value, packages: next };
+    }
+    case "review-0":
+    case "review-1":
+    case "review-2": {
+      const index = Number(slotId.split("-")[1]);
+      const next = [...value.reviews];
+      next[index] = { ...next[index], avatarUrl: imageUrl };
+      return { ...value, reviews: next };
+    }
+    default:
+      return value;
+  }
+};
+
 const sectionCardTemplate = (): SectionCard => ({
   title: "",
   subtitle: "",
@@ -57,6 +129,7 @@ export default function PromocoesPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [bulkUploading, setBulkUploading] = useState(false);
+  const [bulkFiles, setBulkFiles] = useState<Record<string, File>>({});
 
   useEffect(() => {
     const run = async () => {
@@ -133,56 +206,22 @@ export default function PromocoesPage() {
     });
   };
 
-  const applyBulkImageUrls = (urls: string[]) => {
-    if (!urls.length) {
-      return;
-    }
-
-    const safeUrl = (index: number, fallback: string): string => urls[index] ?? fallback;
-
-    setNewsletter((prev) => {
-      let cursor = 0;
-
-      const nextDestinations = prev.destinations.map((card) => {
-        const next = { ...card, imageUrl: safeUrl(cursor, card.imageUrl) };
-        cursor += 1;
-        return next;
-      });
-
-      const nextHotels = prev.hotels.map((card) => {
-        const next = { ...card, imageUrl: safeUrl(cursor, card.imageUrl) };
-        cursor += 1;
-        return next;
-      });
-
-      const nextPackages = prev.packages.map((card) => {
-        const next = { ...card, imageUrl: safeUrl(cursor, card.imageUrl) };
-        cursor += 1;
-        return next;
-      });
-
-      const nextReviews = prev.reviews.map((review) => {
-        const next = { ...review, avatarUrl: safeUrl(cursor, review.avatarUrl) };
-        cursor += 1;
-        return next;
-      });
-
-      return {
-        ...prev,
-        logoUrl: safeUrl(cursor++, prev.logoUrl),
-        hero: { ...prev.hero, imageUrl: safeUrl(cursor++, prev.hero.imageUrl) },
-        banner1: { ...prev.banner1, imageUrl: safeUrl(cursor++, prev.banner1.imageUrl) },
-        banner2: { ...prev.banner2, imageUrl: safeUrl(cursor++, prev.banner2.imageUrl) },
-        destinations: nextDestinations,
-        hotels: nextHotels,
-        packages: nextPackages,
-        reviews: nextReviews,
-      };
+  const setBulkSlotFile = (slotId: string, file: File | null) => {
+    setBulkFiles((prev) => {
+      const next = { ...prev };
+      if (file) {
+        next[slotId] = file;
+      } else {
+        delete next[slotId];
+      }
+      return next;
     });
   };
 
-  const onBulkUpload = async (files: FileList | null) => {
-    if (!files?.length) {
+  const onMappedBulkUpload = async () => {
+    const selectedEntries = Object.entries(bulkFiles);
+    if (!selectedEntries.length) {
+      setMessage("Selecione ao menos uma imagem para o upload em lote.");
       return;
     }
 
@@ -190,20 +229,24 @@ export default function PromocoesPage() {
     setMessage("");
 
     try {
-      const urls: string[] = [];
-      for (const file of Array.from(files)) {
-        const url = await uploadImage(file);
-        urls.push(url);
-      }
+      const uploaded = await Promise.all(
+        selectedEntries.map(async ([slotId, file]) => ({ slotId, url: await uploadImage(file) })),
+      );
 
-      applyBulkImageUrls(urls);
-      setMessage(`Upload concluido. ${urls.length} imagem(ns) aplicada(s).`);
+      setNewsletter((prev) =>
+        uploaded.reduce((acc, item) => applyImageSlot(acc, item.slotId, item.url), prev),
+      );
+
+      setBulkFiles({});
+      setMessage(`Upload concluido. ${uploaded.length} slot(s) atualizado(s).`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Falha no upload em lote");
     } finally {
       setBulkUploading(false);
     }
   };
+
+  const selectedBulkCount = Object.keys(bulkFiles).length;
 
   return (
     <div className="space-y-6">
@@ -216,19 +259,42 @@ export default function PromocoesPage() {
 
       <form className="space-y-6" onSubmit={save}>
         <section className="card p-6">
-          <h3 className="font-title text-xl">Troca rapida de imagens</h3>
+          <h3 className="font-title text-xl">Upload em lote mapeado</h3>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            Envie varias imagens de uma vez para atualizar todos os blocos visuais (cards, avatares, logo, hero e banners).
+            Cada arquivo e vinculado ao slot correto antes do envio. Sem dependencia de ordem de selecao.
           </p>
-          <input
-            className="mt-3 block text-sm"
-            type="file"
-            accept="image/*"
-            multiple
-            disabled={bulkUploading}
-            onChange={(event) => void onBulkUpload(event.target.files)}
-          />
-          {bulkUploading ? <p className="mt-2 text-sm font-semibold text-[var(--color-primary)]">Enviando lote de imagens...</p> : null}
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {IMAGE_SLOTS.map((slot) => (
+              <label key={slot.id} className="rounded-lg border border-[var(--color-border)] p-3 text-sm font-semibold text-[var(--color-ink)]">
+                {slot.label}
+                <input
+                  className="mt-2 block w-full text-xs"
+                  type="file"
+                  accept="image/*"
+                  disabled={bulkUploading}
+                  onChange={(event) => setBulkSlotFile(slot.id, event.target.files?.[0] ?? null)}
+                />
+                {bulkFiles[slot.id] ? (
+                  <p className="mt-1 text-xs font-normal text-[var(--color-primary)]">Selecionado: {bulkFiles[slot.id].name}</p>
+                ) : null}
+                {slot.read(newsletter) ? (
+                  <p className="mt-1 break-all text-xs font-normal text-[var(--color-muted)]">Atual: {slot.read(newsletter)}</p>
+                ) : null}
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              className="btn bg-[var(--color-primary)] px-4 py-2 text-white"
+              type="button"
+              disabled={bulkUploading || !selectedBulkCount}
+              onClick={() => void onMappedBulkUpload()}
+            >
+              Aplicar upload em lote
+            </button>
+            <span className="text-sm text-[var(--color-muted)]">{selectedBulkCount} slot(s) selecionado(s)</span>
+          </div>
+          {bulkUploading ? <p className="mt-2 text-sm font-semibold text-[var(--color-primary)]">Enviando imagens mapeadas...</p> : null}
         </section>
 
         <section className="card grid gap-4 p-6 md:grid-cols-2">
