@@ -2,6 +2,7 @@ import { sendBrevoSmtpMail } from "@/lib/brevo-smtp";
 import { getNewsletterState } from "@/lib/data-store";
 import { renderNewsletterHtml, renderNewsletterText } from "@/lib/newsletter-template";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { getTourismNews } from "@/lib/tourism-news";
 import { CampaignLog } from "@/lib/types";
 import { NextResponse } from "next/server";
 
@@ -31,8 +32,9 @@ export async function POST(request: Request) {
 
     const supabase = getSupabaseAdmin();
     const newsletter = await getNewsletterState();
-    const html = renderNewsletterHtml(newsletter);
-    const text = renderNewsletterText(newsletter);
+    const tourismNews = await getTourismNews();
+    const html = renderNewsletterHtml(newsletter, tourismNews);
+    const text = renderNewsletterText(newsletter, tourismNews);
     const now = new Date().toISOString();
 
     let recipients: Array<{ email: string; name: string }>;

@@ -22,6 +22,13 @@ export interface NewsletterBanner {
   description: string;
 }
 
+export interface TourismNewsItem {
+  title: string;
+  url: string;
+  source: string;
+  publishedAt: string;
+}
+
 export interface NewsletterContent {
   templateVersion: "v2";
   agencyName: string;
