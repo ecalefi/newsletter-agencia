@@ -5,6 +5,7 @@ Painel administrativo para montar newsletter semanal de turismo com template pad
 - contatos (`nome + email + whatsapp`) via cadastro manual e planilha
 - template fixo com 6 slots (3 nacionais + 3 internacionais)
 - cada slot com imagem + texto abaixo
+- secao automatica de noticias do turismo (API externa com fallback)
 - upload de imagens no Supabase Storage
 - preview HTML profissional e leve para email
 - disparo direto pela API da Brevo
@@ -32,7 +33,16 @@ npm install
 cp .env.example .env.local
 ```
 
-Preencha `.env.local` com Supabase, credenciais admin e API key da Brevo.
+Preencha `.env.local` com Supabase, credenciais admin, API key da Brevo e API key da GNews.
+
+Variaveis opcionais para noticias e banners:
+
+- `NEWS_TOURISM_ENABLED=true|false`
+- `GNEWS_API_KEY=...`
+- `TOURISM_NEWS_LIMIT=3`
+- `TOURISM_NEWS_QUERY=...`
+- `NEWSLETTER_INSURANCE_BANNER_IMAGE_URL=...`
+- `NEWSLETTER_INSURANCE_BANNER_CTA_URL=...`
 
 3) Crie schema no Supabase
 
@@ -51,8 +61,9 @@ Abra `http://localhost:3000/login`.
 1. **Contatos**: importar planilha/cadastrar manual.
 2. **Promocoes**: editar somente 6 imagens e os textos de cada bloco.
 3. **Preview**: revisar HTML final da newsletter.
-4. **Envio**: acionar envio teste ou semanal (API Brevo).
-5. **n8n**: enviar payload para webhook com `html`, `text` e `contacts`.
+4. **Noticias**: o sistema busca automaticamente manchetes atualizadas do mercado de turismo (GNews).
+5. **Envio**: acionar envio teste ou semanal (API Brevo).
+6. **n8n**: enviar payload para webhook com `html`, `text` e `contacts`.
 
 ## Endpoints principais
 

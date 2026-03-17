@@ -1,6 +1,7 @@
 import { getNewsletterState } from "@/lib/data-store";
 import { renderNewsletterHtml, renderNewsletterText } from "@/lib/newsletter-template";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { getTourismNews } from "@/lib/tourism-news";
 import { NextResponse } from "next/server";
 
 interface PushBody {
@@ -26,8 +27,9 @@ export async function POST(request: Request) {
   }
 
   const newsletter = await getNewsletterState();
-  const html = renderNewsletterHtml(newsletter);
-  const text = renderNewsletterText(newsletter);
+  const tourismNews = await getTourismNews();
+  const html = renderNewsletterHtml(newsletter, tourismNews);
+  const text = renderNewsletterText(newsletter, tourismNews);
 
   const supabase = getSupabaseAdmin();
   const { data: contacts, error } = await supabase

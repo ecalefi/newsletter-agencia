@@ -1,5 +1,6 @@
 import { getNewsletterState } from "@/lib/data-store";
 import { renderNewsletterHtml } from "@/lib/newsletter-template";
+import { getTourismNews } from "@/lib/tourism-news";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,8 @@ export default async function PreviewPage() {
 
   try {
     const newsletter = await getNewsletterState();
-    html = renderNewsletterHtml(newsletter);
+    const tourismNews = await getTourismNews();
+    html = renderNewsletterHtml(newsletter, tourismNews);
   } catch (error) {
     errorMessage = error instanceof Error ? error.message : "Falha inesperada ao carregar o preview";
   }
