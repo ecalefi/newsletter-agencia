@@ -260,8 +260,6 @@ const renderInsuranceBanner = (): string => `
 const renderTourismNews = (newsItems: TourismNewsItem[]): string => {
   const hasNews = newsItems.length > 0;
 
-  if (!hasNews) return "";
-
   return `
     <tr>
       <td style="padding:8px 28px 24px;">
@@ -291,30 +289,40 @@ const renderTourismNews = (newsItems: TourismNewsItem[]): string => {
           <tr>
             <td style="padding:0 28px 24px;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                ${newsItems
-                  .slice(0, 4)
-                  .map((item) => {
-                    const published = new Date(item.publishedAt).toLocaleDateString("pt-BR", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric"
-                    });
-                    return `
-                      <tr>
-                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
-                          <a href="${escapeHtml(item.url)}" style="text-decoration:none;">
-                            <span style="display:block;font-size:15px;font-weight:600;color:#1e40af;line-height:1.4;">
-                              ${escapeHtml(item.title)}
-                            </span>
-                          </a>
-                          <span style="display:block;font-size:12px;color:#64748b;padding-top:4px;">
-                            ${escapeHtml(item.source)} • ${escapeHtml(published)}
-                          </span>
-                        </td>
-                      </tr>
-                    `;
-                  })
-                  .join("")}
+                ${hasNews
+                  ? newsItems
+                      .slice(0, 4)
+                      .map((item) => {
+                        const published = new Date(item.publishedAt).toLocaleDateString("pt-BR", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric"
+                        });
+                        return `
+                          <tr>
+                            <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                              <a href="${escapeHtml(item.url)}" style="text-decoration:none;">
+                                <span style="display:block;font-size:15px;font-weight:600;color:#1e40af;line-height:1.4;">
+                                  ${escapeHtml(item.title)}
+                                </span>
+                              </a>
+                              <span style="display:block;font-size:12px;color:#64748b;padding-top:4px;">
+                                ${escapeHtml(item.source)} • ${escapeHtml(published)}
+                              </span>
+                            </td>
+                          </tr>
+                        `;
+                      })
+                      .join("")
+                  : `
+                    <tr>
+                      <td style="padding:12px 0;">
+                        <span style="display:block;font-size:14px;line-height:1.6;color:#475569;">
+                          Nao foi possivel carregar as noticias agora. Verifique a configuracao da GNews (GNEWS_API_KEY) ou aguarde o cache ser atualizado.
+                        </span>
+                      </td>
+                    </tr>
+                  `}
               </table>
             </td>
           </tr>

@@ -4,6 +4,8 @@ import { TourismNewsItem } from "@/lib/types";
 const CACHE_KEY = "tourism_news_cache";
 const DEFAULT_LIMIT = 3;
 const MAX_LIMIT = 5;
+const DEFAULT_QUERY = '"mercado de turismo" OR turismo OR hotelaria OR aviacao';
+const FALLBACK_QUERY = "turismo OR viagem OR companhia aerea OR hotel";
 
 interface TourismNewsCache {
   fetchedAt: string;
@@ -89,40 +91,64 @@ const writeCachedNews = async (items: TourismNewsItem[]): Promise<void> => {
 const fetchFromGNews = async (): Promise<TourismNewsItem[]> => {
   const apiKey = process.env.GNEWS_API_KEY?.trim();
   if (!apiKey) {
+    console.warn("[tourism-news] GNEWS_API_KEY ausente; usando cache local.");
     return [];
   }
 
   const limit = clampLimit(Number(process.env.TOURISM_NEWS_LIMIT ?? DEFAULT_LIMIT));
-  const query = process.env.TOURISM_NEWS_QUERY?.trim() || '"mercado de turismo" OR turismo OR hotelaria OR aviacao';
+  const query = process.env.TOURISM_NEWS_QUERY?.trim() || DEFAULT_QUERY;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3500);
 
   try {
-    const params = new URLSearchParams({
-      q: query,
-      lang: "pt",
-      country: "br",
-      max: String(limit),
-      sortby: "publishedAt",
-      in: "title,description",
-      token: apiKey,
-    });
+    const fetchArticles = async (
+      q: string,
+      options?: { country?: string; fields?: string },
+    ): Promise<TourismNewsItem[]> => {
+      const params = new URLSearchParams({
+        q,
+        lang: "pt",
+        max: String(limit),
+        sortby: "publishedAt",
+        token: apiKey,
+      });
 
-    const response = await fetch(`https://gnews.io/api/v4/search?${params.toString()}`, {
-      method: "GET",
-      cache: "no-store",
-      signal: controller.signal,
-    });
+      if (options?.country) {
+        params.set("country", options.country);
+      }
 
-    if (!response.ok) {
-      return [];
+      if (options?.fields) {
+        params.set("in", options.fields);
+      }
+
+      const response = await fetch(`https://gnews.io/api/v4/search?${params.toString()}`, {
+        method: "GET",
+        cache: "no-store",
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        console.warn(`[tourism-news] GNews retornou ${response.status}: ${body.slice(0, 160)}`);
+        return [];
+      }
+
+      const payload = (await response.json()) as { articles?: unknown[] };
+      return (payload.articles ?? []).map(normalizeItem).filter((item): item is TourismNewsItem => item !== null);
+    };
+
+    const primaryItems = await fetchArticles(query, { country: "br", fields: "title,description" });
+    if (primaryItems.length >= limit) {
+      return primaryItems.slice(0, limit);
     }
 
-    const payload = (await response.json()) as { articles?: unknown[] };
-    const items = (payload.articles ?? []).map(normalizeItem).filter((item): item is TourismNewsItem => item !== null);
-    return items.slice(0, limit);
+    const fallbackItems = await fetchArticles(FALLBACK_QUERY);
+    const merged = [...primaryItems, ...fallbackItems];
+    const deduped = Array.from(new Map(merged.map((item) => [item.url, item])).values());
+    return deduped.slice(0, limit);
   } catch {
+    console.warn("[tourism-news] Falha ao consultar GNews; usando cache local.");
     return [];
   } finally {
     clearTimeout(timeout);
